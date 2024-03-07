@@ -1,21 +1,39 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { GetCoins } from '../services/Getcoin'
 
 const BottomCard = () => {
-    return (
-        <div className='bg-blue-500 h-96 grid rounded-lg pd-8 ml-12 mr-12 md-2 pl-4 pr-4 place-content-center'>
-          <h1 className='place-content-center mt-1 text-center font-bold text-white text-xl'>
-            Get Started with KoinX <br></br>
-            for FREE
-          </h1>
-          <p className='text-white pt-3'>With our range of features that you can equip for<br></br> 
-            free, KoinX allows you to be more educated and <be></be>
-            <span class="block text-center">aware of your tax reports</span></p>
-          <img className='justify-self-center w-40 h-32 pt-4 justify-items-center'
-           src='https://www.shutterstock.com/shutterstock/photos/1694176021/display_1500/stock-vector-e-learning-banner-online-education-home-schooling-modern-workplace-man-teacher-on-laptop-screen-1694176021.jpg'>
-          </img>
-          <button className='text-blue-900 bg-white rounded-r-md rounded-l-lg py-1 mx-10 mt-3'>Get Started for FREE </button>
-        </div>
-      )
-}
+  const [coins, setCoins] = useState([]);
+
+  useEffect(() => {
+    const fetchCoins = async () => {
+      const coinsData = await GetCoins();
+      coinsData?.sort((coin1,coin2)=>{
+        return coin1.item.market_cap_rank - coin2.item.market_cap_rank;
+      })
+      setCoins(coinsData?.slice(0,3));
+    };
+    fetchCoins();
+  }, []);
+
+  return (
+  <div className="bg-white shadow-2xl drop-shadow-2xl rounded-md p-4 flex flex-col gap-4 ml-12 mr-12">
+      <h2 className="text-black text-2xl font-bold">Trending Coins (24h)</h2>
+      {
+        coins?.map(
+          (coin, index) => {
+            return (
+              <div key={index} className=" flex gap-2 items-center">
+                <img src={coin.item.small} className="w-10 h-10 rounded-full" />
+                <div>
+                  <h3 className="text-black font-semibold">{coin.item.name}</h3>
+                </div>
+              </div>
+            )
+          }
+        )
+      }
+    </div>
+    );
+};
 
 export default BottomCard
